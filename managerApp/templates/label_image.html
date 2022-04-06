@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<head>
+    <title>ECE1779 Assignment Three</title>
+    <link rel="stylesheet" type="text/css" href='/static/core-style.css' />
+</head>
+<html>
+    <body>
+        {% include "sidebar.html" %}
+            <form
+                method="post"
+                onsubmit="return validateForm()"
+                enctype=multipart/form-data>
+                <div class="modal" style="width:50vw">
+                    <h1 class="form-title">Search for Image Key</h1>
+                    <div class="div-row">
+                        <input type="text" id="key" name="key" class="type-select" placeholder="Image Key" value={{key}} >
+                        <input type="image" src="https://statis-store-a3.s3.amazonaws.com/search.svg" class="search-icon"/>
+                    </div>
+                    <div>
+                        <div class="image-wrapper">
+                            {% if image is defined %}
+                                <div class="div-row">
+                                    <div>
+                                        {% if prediction is defined %}
+                                        <h4 style="text-align: center; color: rgb(0, 0, 0); font-style: italic; margin: 0px;">Predicted Value: {{ prediction }}</h4>
+                                        {% else %} 
+                                        <h4 style="text-align: center; color: rgb(0, 0, 0); font-style: italic; margin: 0px;">No Predicted Value </h4>
+                                        {% endif %}
+
+                                        {% if label is defined %}
+                                        <h4 style="text-align: center; color: rgb(0, 0, 0); font-style: italic; margin: 0px;">Labelled Value: {{ label }}</h4>
+                                        {% else %} 
+                                        <h4 style="text-align: center; color: rgb(0, 0, 0); font-style: italic; margin: 0px;">No Labelled Value </h4>
+                                        {% endif %}
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="dropbtn" style="margin-left: 20px;">Category</button>
+                                        <div class="dropdown-content" style="margin-left: 20px;">
+                                        <input type="submit" id="dog" value="Dog" name="submit">
+                                        <input type="submit" id="cat" value="Cat" name="submit">
+                                        </div>
+                                    </div>
+                                </div>
+                                <img src= "data:image/png;base64,{{ image }}" alt="IMAGE NOT FOUND" class="show-image" id="image"/>
+                            {% endif %}
+                            {% if status is defined %} 
+                                <h4 style="text-align: center; color: rgb(172, 16, 16); font-style: italic;">{{ status }}</h4>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+    <body>
+</html>

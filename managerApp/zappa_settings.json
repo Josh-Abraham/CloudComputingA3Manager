@@ -1,0 +1,10 @@
+{
+    "dev": {
+        "app_function": "main.webapp",
+        "aws_region": "us-east-1",
+        "profile_name": "default",
+        "project_name": "managerapp",
+        "runtime": "python3.9",
+        "s3_bucket": "zappa-wxee4f75b"
+    }
+}

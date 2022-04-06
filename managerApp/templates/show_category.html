@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<head>
+    <title>ECE1779 Assignment Three</title>
+    <link rel="stylesheet" type="text/css" href='https://statis-store-a3.s3.amazonaws.com/core-style.css' />
+</head>
+<html>
+    <body>
+        {% include "sidebar.html" %}
+        <div>
+            <form
+                method="post"
+                enctype=multipart/form-data
+                >
+                <div class="modal" style="width:70vw; height: 80vh">
+                    <h1 class="form-title">Show Image Category</h1>
+                    <div class="div-row" style="justify-content: space-around;">
+                        <div class="dropdown">
+                            <button class="dropbtn" style="margin-left: 20px; width:170px">By Predicted Label</button>
+                            <div class="dropdown-content" style="margin-left: 20px; width:170px">
+                            <input type="submit" id="dog" value="Dog" name="submit-predict" style="width:170px">
+                            <input type="submit" id="cat" value="Cat" name="submit-predict" style="width:170px">
+                            </div>
+                        </div>
+                        <div class="dropdown">
+                            <button class="dropbtn" style="margin-left: 20px;">By Label</button>
+                            <div class="dropdown-content" style="margin-left: 20px;">
+                            <input type="submit" id="dog" value="Dog" name="submit-label">
+                            <input type="submit" id="cat" value="Cat" name="submit-label">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                            {% if images is defined %}
+                                <div class="images">
+                                {% for image_row in images %}
+                                    <div class="div-row">
+                                    {% for image_data in image_row %}
+                                        <div style="display: flex; flex-direction: column; align-items: center;">
+                                            <img src= "data:image/png;base64,{{ image_data['image'] }}" alt="IMAGE NOT FOUND" class="show-image" style="width: 25vw"/>
+                                            Labelled Value: {{ image_data['label'] }}
+                                            Predicted Value: {{ image_data['predicted_label'] }}
+                                        </div>
+                                    {% endfor %}
+                                    </div>
+                                {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if status is defined %} 
+                                {% if status == 404 %}
+                                <h4 style="text-align: center; color: rgb(172, 16, 16); font-style: italic;">No Images Within Category</h4>
+                                {% endif %}
+                            {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    <body>    
+</html>
