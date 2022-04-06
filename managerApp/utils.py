@@ -1,3 +1,4 @@
+from cmath import exp
 from access_key import aws_config
 import boto3
 from botocore.config import Config
@@ -55,7 +56,8 @@ def update_dynamo(key, label, classification="None"):
         return "OK"
     return "FAILURE"
 
-def scan_dynamo():
+
+def get_metrics():
     metrics = {
         'untrained': 0,
         'labelled': 0,
@@ -63,7 +65,8 @@ def scan_dynamo():
         'matching': 0
     }
     # full scan dynamo
-    elems = []
+    response = image_store.scan()
+    elems = response['Items']
     for image in elems:
         if image['trained'] == False:
             metrics['untrained'] += 1
@@ -127,3 +130,23 @@ def read_category(category, isPredicted):
         return images
     except:
         return None
+
+def purge_images():
+    s3_del = boto3.resource('s3',config=my_config,aws_access_key_id= aws_config['aws_access_key_id'], aws_secret_access_key= aws_config['aws_secret_access_key'])
+    bucket = s3_del.Bucket(S3_BUCKET)
+    bucket.objects.all().delete()
+    return True
+    
+def clear_table():
+    global image_store
+    response = image_store.scan()
+    elems = response['Items']
+    for elem in elems:
+        key = elem['image_key']
+        response = image_store.delete_item(
+                Key={
+                    'image_key': key
+                }
+            )
+
+

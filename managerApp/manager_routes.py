@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, request, redirect
+from flask import Blueprint, render_template, request, redirect, url_for
 from utils import *
 
 manager_routes = Blueprint("manager_routes", __name__)
-MODEL_METRICS = scan_dynamo()
+MODEL_METRICS = get_metrics()
 IMAGE = None
 PREDICTION = None
 LABEL = None
@@ -68,11 +68,7 @@ def settings():
 
 @manager_routes.route('/clear_data', methods = ['GET', 'POST'])
 def clear_data():
-    # clear dynamo
-    # clear S3
-    return redirect('/settings')
+    clear_table()
+    purge_images()
+    return render_template("settings.html")
 
-@manager_routes.route('/clear_labels', methods = ['GET', 'POST'])
-def clear_labels():
-    # set dynamo labels to "None"
-    return redirect('/settings')
