@@ -93,6 +93,8 @@ def remove_metric(metrics, key, new_label):
         
     if old_data['label'] == None:
         metrics['labelled'] += 1
+    
+    return metrics
 
 def read_category(category, isPredicted):
     try:
@@ -131,6 +133,28 @@ def read_category(category, isPredicted):
     except:
         return None
 
+def read_all():
+    try:
+        response = image_store.scan()
+        images = [[]]
+        i = 0
+        j = 0
+        for item in response['Items']:
+            images[i].append(
+                {
+                    'image': download_image(item['image_key']),
+                    'label': item['label'],
+                    'label': item['label']
+                })
+            j += 1
+            if j % 3 == 0:
+                images.append([])
+                i += 1
+                j = 0
+        return images
+    except:
+        return None
+
 def purge_images():
     s3_del = boto3.resource('s3',config=my_config,aws_access_key_id= aws_config['aws_access_key_id'], aws_secret_access_key= aws_config['aws_secret_access_key'])
     bucket = s3_del.Bucket(S3_BUCKET)
@@ -148,5 +172,11 @@ def clear_table():
                     'image_key': key
                 }
             )
+    return {
+        'untrained': 0,
+        'labelled': 0,
+        'trained': 0,
+        'matching': 0
+    }
 
 

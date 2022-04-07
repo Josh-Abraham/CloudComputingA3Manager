@@ -16,6 +16,14 @@ h1 {
   color: #176399;
 }
 
+h2 {
+  font-weight: 600;
+  font-size: 18px;
+  margin: 0px;
+  margin-bottom: 10px;
+  color: #176399;
+}
+
 body {
   margin: 0px;
   display: flex;
@@ -30,6 +38,7 @@ body {
   flex-direction: column;
   background-color: #171e36;
   color: whitesmoke;
+  align-items: center;
 }
 
 .home {
@@ -249,3 +258,18 @@ body {
   top: calc(50% - 110px);
   left: calc(50% + 100px);
 }
+
+.dashboard-modal {
+  display: flex;
+  flex-direction: column;
+  height: 150px;
+  width: 180px;
+  background-color: rgba(255, 255, 255, 0.274);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255,255,255,0.1);
+  box-shadow: 0 0 20px rgba(207, 206, 209, 0.6);
+  padding: 20px 55px;
+  align-items: center;
+}
+

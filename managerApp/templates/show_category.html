@@ -12,7 +12,10 @@
                 enctype=multipart/form-data
                 >
                 <div class="modal" style="width:70vw; height: 80vh">
-                    <h1 class="form-title">Show Image Category</h1>
+                    <h1 class="form-title">Show Image By Category</h1>
+                    {% if showAll is defined %}
+                        <h3 style="font-style: italic;">Showing all Images</h3>
+                    {% endif %}
                     <div class="div-row" style="justify-content: space-around;">
                         <div class="dropdown">
                             <button class="dropbtn" style="margin-left: 20px; width:170px">By Predicted Label</button>
@@ -48,7 +51,10 @@
                             {% if status is defined %} 
                                 {% if status == 404 %}
                                 <h4 style="text-align: center; color: rgb(172, 16, 16); font-style: italic;">No Images Within Category</h4>
+                                {% elif status == 405 %}
+                                <h4 style="text-align: center; color: rgb(172, 16, 16); font-style: italic;">No Images Found</h4>
                                 {% endif %}
+
                             {% endif %}
                     </div>
                 </div>

@@ -30,7 +30,7 @@ def label_image():
         else:
             # On dropdown click
             key = request.form.get('key')
-            remove_metric(MODEL_METRICS, key, category)
+            MODEL_METRICS = remove_metric(MODEL_METRICS, key, category)
             resp = update_dynamo(key, category)
             if resp == "OK":
                 LABEL=category
@@ -46,7 +46,12 @@ def show_category():
     GET: Simply render the show_image page
     POST: Search for a given key
     """
-    if request.method == 'POST':
+    if request.method == 'GET':
+        images = read_all()
+        if (not images == None) and len(images[0]) == 0:
+                return render_template("show_category.html", status=405)
+        return render_template("show_category.html", images=images, showAll=True)
+    elif request.method == 'POST':
         predict_category = request.form.get("submit-predict")
         label_category = request.form.get("submit-label")
         if not predict_category == None:
@@ -64,11 +69,37 @@ def show_category():
 
 @manager_routes.route('/settings', methods = ['GET', 'POST'])
 def settings():
-    return render_template("settings.html")
+    train_metrics, label_metrics = configure_metrics()
+    return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
 
 @manager_routes.route('/clear_data', methods = ['GET', 'POST'])
 def clear_data():
-    clear_table()
-    purge_images()
-    return render_template("settings.html")
+    global MODEL_METRICS
+    if request.method == 'POST':
+        MODEL_METRICS = clear_table()
+        purge_images()
+    train_metrics, label_metrics = configure_metrics()
+    return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
 
+@manager_routes.route('/train_model', methods = ['GET', 'POST'])
+def train_model():
+    global MODEL_METRICS
+    if request.method == 'POST':
+        print('train_model')
+    train_metrics, label_metrics = configure_metrics()
+    return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
+
+
+def configure_metrics():
+    global MODEL_METRICS
+    train_metrics = [
+         {'name': 'Untrained', 'value': 5},
+        {'name': 'Trained', 'value': 5}
+    ]
+    label_metrics = [
+        {'name': 'Labelled', 'value': 3},
+        {'name': 'Unlabelled', 'value': 2},
+        {'name': 'Matching', 'value': 4},
+        {'name': 'Not Matching', 'value': 1},
+    ]
+    return train_metrics, label_metrics
