@@ -1,7 +1,6 @@
 import requests
 import boto3, time, datetime, json
 from access_key import aws_config
-from manager_server import memcache_pool
 client = boto3.client('logs', region_name="us-east-1", aws_access_key_id=aws_config['aws_access_key_id'], aws_secret_access_key=aws_config['aws_secret_access_key'])
 
 def create_log(message):
