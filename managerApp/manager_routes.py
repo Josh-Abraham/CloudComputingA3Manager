@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from utils import *
+from statistics_server import create_log
 
 manager_routes = Blueprint("manager_routes", __name__)
 MODEL_METRICS = get_metrics()
@@ -24,6 +25,7 @@ def label_image():
                 if not IMAGE == None:
                     PREDICTION = resp['predicted_label']
                     LABEL = resp['label']
+                    create_log("image: " + IMAGE + ", prediction: " + PREDICTION  + ", label: " + LABEL + ", key: " + KEY)
                     return render_template("label_image.html", image=IMAGE, prediction=PREDICTION, label=LABEL, key=key)
             # No Key -> Returns Not Found 
             return render_template("label_image.html", status="No Image With Provided Key", key=key)
@@ -34,6 +36,7 @@ def label_image():
             MODEL_METRICS = get_metrics()
             if resp == "OK":
                 LABEL=category
+                create_log("image: " + IMAGE + ", prediction: " + PREDICTION  + ", label: " + LABEL + ", key: " + KEY)
                 return render_template("label_image.html", image=IMAGE, prediction=PREDICTION, label=LABEL, key=key)
             return render_template("label_image.html", status="Error writing new label", key=key)
 
