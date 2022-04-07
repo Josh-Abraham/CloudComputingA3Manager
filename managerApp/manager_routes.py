@@ -30,8 +30,8 @@ def label_image():
         else:
             # On dropdown click
             key = request.form.get('key')
-            MODEL_METRICS = remove_metric(MODEL_METRICS, key, category)
             resp = update_dynamo(key, category)
+            MODEL_METRICS = get_metrics()
             if resp == "OK":
                 LABEL=category
                 return render_template("label_image.html", image=IMAGE, prediction=PREDICTION, label=LABEL, key=key)
@@ -69,37 +69,31 @@ def show_category():
 
 @manager_routes.route('/settings', methods = ['GET', 'POST'])
 def settings():
-    train_metrics, label_metrics = configure_metrics()
-    return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
-
-@manager_routes.route('/clear_data', methods = ['GET', 'POST'])
-def clear_data():
-    global MODEL_METRICS
-    if request.method == 'POST':
-        MODEL_METRICS = clear_table()
+    if request.method == 'GET':
+        train_metrics, label_metrics = configure_metrics()
+        return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
+    
+    is_clear = request.form.get("clear_data")
+    if not is_clear == None:
+        clear_table()
         purge_images()
+        train_metrics, label_metrics = configure_metrics()
+        return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
+    print('train_model')
     train_metrics, label_metrics = configure_metrics()
     return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
-
-@manager_routes.route('/train_model', methods = ['GET', 'POST'])
-def train_model():
-    global MODEL_METRICS
-    if request.method == 'POST':
-        print('train_model')
-    train_metrics, label_metrics = configure_metrics()
-    return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
-
 
 def configure_metrics():
     global MODEL_METRICS
+    MODEL_METRICS = get_metrics()
     train_metrics = [
-         {'name': 'Untrained', 'value': 5},
-        {'name': 'Trained', 'value': 5}
+        {'name': 'Untrained', 'value': MODEL_METRICS['untrained']},
+        {'name': 'Trained', 'value': MODEL_METRICS['trained']}
     ]
     label_metrics = [
-        {'name': 'Labelled', 'value': 3},
-        {'name': 'Unlabelled', 'value': 2},
-        {'name': 'Matching', 'value': 4},
-        {'name': 'Not Matching', 'value': 1},
+        {'name': 'Labelled', 'value': MODEL_METRICS['labelled']},
+        {'name': 'Unlabelled', 'value': MODEL_METRICS['untrained'] - MODEL_METRICS['labelled']},
+        {'name': 'Matching', 'value': MODEL_METRICS['matching']},
+        {'name': 'Not Matching', 'value': MODEL_METRICS['trained'] - MODEL_METRICS['matching']},
     ]
     return train_metrics, label_metrics

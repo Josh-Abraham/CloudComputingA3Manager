@@ -81,21 +81,6 @@ def get_metrics():
     
     return metrics
 
-def remove_metric(metrics, key, new_label):
-    old_data = read_dynamo(key)
-    if 'trained' in old_data:
-        if old_data['trained']:
-            metrics['untrained'] += 1
-            metrics['trained'] -= 1
-
-            if old_data['predicted_label'] == old_data['label'] and not old_data['label'] == new_label:
-                metrics['matching'] -= 1
-        
-    if old_data['label'] == None:
-        metrics['labelled'] += 1
-    
-    return metrics
-
 def read_category(category, isPredicted):
     try:
         response = image_store.scan()

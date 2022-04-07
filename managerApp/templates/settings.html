@@ -9,39 +9,32 @@
         {% include "sidebar.html" %}
         <div class="image-bg">
             <div class="home" style="width: 800px;">
+                <form
+                    method="post"
+                    enctype=multipart/form-data>
                 <h1 class="header">
                     System Manager Settings Panel
                 </h1>
-                <div class="div-row" style="justify-content: space-between; padding-top: 20px;">
-                    <div>
-                        <div class="dashboard-modal">
-                            <form
-                                method="post"
-                                action="/clear_data"
-                                enctype=multipart/form-data>
-                                    <h2>Clear Data</h2>
-                                    <label style="font-style: italic;">Clear all user supplied data in S3 & DynamoDB</label>
-                                    <input type=submit value="Clear" class="submit-button">
-                            </form>
+                    <div class="div-row" style="justify-content: space-between; padding-top: 20px;">
+                        <div>
+                            <div class="dashboard-modal">
+                                <h2>Clear Data</h2>
+                                <label style="font-style: italic;">Clear all user supplied data in S3 & DynamoDB</label>
+                                <input type=submit value="Clear" name="clear_data" class="submit-button">
+                            </div>
+                            <div class="dashboard-modal" style="margin-top: 30px;">
+                                <h2>Train Model</h2>
+                                <label style="font-style: italic;">Train model with new labelled images</label><br/>
+                                <input type=submit value="Train" name="train_model" class="submit-button">
+                            </div>
                         </div>
-                        <div class="dashboard-modal" style="margin-top: 30px;">
-                            <form
-                                method="post"
-                                action="/train_model"
-                                enctype=multipart/form-data>
-                                    <h2>Train Model</h2>
-                                    <label style="font-style: italic;">Train model with new labelled images</label><br/>
-                                    <input type=submit value="Train" class="submit-button">
-                            </form>
+                        <div class="dashboard-modal" style="width:350px; height: 375px">
+                            <h2>System Metrics</h2>
+                            <label style="font-style: italic;">Metrics about current images, labelling and model performance</label>
+                            <div id="trainMetrics" style="width: 250px;height:300px;"></div>    
                         </div>
                     </div>
-                    <div class="dashboard-modal" style="width:350px; height: 375px">
-                        <h2>System Metrics</h2>
-                        <label style="font-style: italic;">Metrics about current images, labelling and model performance</label>
-                        <div id="trainMetrics" style="width: 250px;height:300px;"></div>
-                        
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
 
