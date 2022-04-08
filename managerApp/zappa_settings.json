@@ -6,6 +6,6 @@
         "project_name": "managerapp",
         "runtime": "python3.9",
         "s3_bucket": "zappa-managerapp",
-        "apigateway_enabled": false
+        "apigateway_enabled": true
     }
 }
