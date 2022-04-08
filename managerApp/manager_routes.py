@@ -15,7 +15,9 @@ def label_image():
     Write to dynamo, include new 'trained' tag
     """
     global IMAGE, PREDICTION, MODEL_METRICS, LABEL
+    message = "[managerApp] [/label_image] "
     if request.method == 'POST':
+        message += "[POST]  "
         category = request.form.get("submit")
         if category == None:
             key = request.form.get('key')
@@ -25,9 +27,12 @@ def label_image():
                 if not IMAGE == None:
                     PREDICTION = resp['predicted_label']
                     LABEL = resp['label']
-                    create_log("image: " + IMAGE + ", prediction: " + PREDICTION  + ", label: " + LABEL + ", key: " + KEY)
+                    # Logging
+                    message += "image: " + IMAGE + " prediction: " + PREDICTION  + " label: " + LABEL + " key: " + KEY
+                    create_log(message)
                     return render_template("label_image.html", image=IMAGE, prediction=PREDICTION, label=LABEL, key=key)
-            # No Key -> Returns Not Found 
+            # No Key -> Returns Not Found & Logging
+            create_log(message + "key: " + key + "Key Not Found")
             return render_template("label_image.html", status="No Image With Provided Key", key=key)
         else:
             # On dropdown click
@@ -36,10 +41,12 @@ def label_image():
             MODEL_METRICS = get_metrics()
             if resp == "OK":
                 LABEL=category
-                create_log("image: " + IMAGE + ", prediction: " + PREDICTION  + ", label: " + LABEL + ", key: " + KEY)
+                message += "image: " + IMAGE + " prediction: " + PREDICTION  + " label: " + LABEL + " key: " + KEY
+                create_log(message)
                 return render_template("label_image.html", image=IMAGE, prediction=PREDICTION, label=LABEL, key=key)
+            message += "error: writing new label key: " + key
+            create_log(message)
             return render_template("label_image.html", status="Error writing new label", key=key)
-
 
     return render_template("label_image.html")
 
@@ -72,6 +79,7 @@ def show_category():
 
 @manager_routes.route('/settings', methods = ['GET', 'POST'])
 def settings():
+    message = "[managerApp] [/settings] "
     if request.method == 'GET':
         train_metrics, label_metrics = configure_metrics()
         return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
@@ -81,6 +89,9 @@ def settings():
         clear_table()
         purge_images()
         train_metrics, label_metrics = configure_metrics()
+        # Logging
+        message += "[clear data] train_metrics: " + train_metrics + " label_metrics: " + label_metrics
+        create_log(message)
         return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
     print('train_model')
     train_metrics, label_metrics = configure_metrics()
@@ -100,3 +111,4 @@ def configure_metrics():
         {'name': 'Not Matching', 'value': MODEL_METRICS['trained'] - MODEL_METRICS['matching']},
     ]
     return train_metrics, label_metrics
+    
