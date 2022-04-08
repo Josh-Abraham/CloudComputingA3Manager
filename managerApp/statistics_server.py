@@ -5,25 +5,27 @@ client = boto3.client('logs', region_name="us-east-1", aws_access_key_id=aws_con
 
 def create_log(message):
     sequence_token = None
-    log_stream_resp = client.describe_log_streams(logGroupName="MetricLogsA3", logStreamNamePrefix="ApplicationLogs")
-    if 'uploadSequenceToken' in log_stream_resp['logStreams'][0]:
-        # Get previous Sequence Token if it exists
-        sequence_token = log_stream_resp['logStreams'][0]['uploadSequenceToken']
-
     log_event = {
-            'logGroupName': 'MetricLogs',
-            'logStreamName': 'ApplicationLogs',
-            'logEvents': [
-                {
-                    'timestamp': int(round(time.time() * 1000)),
-                    'message': message
-                },
-            ],
-        }
-    if sequence_token:
+        'logGroupName': 'A3Logs',
+        'logStreamName': 'ApplicationLogs',
+        'logEvents': [
+            {
+                'timestamp': int(round(time.time() * 1000)),
+                'message': message
+            },
+        ],
+    }
+
+    log_stream_resp = client.describe_log_streams(logGroupName="A3Logs", logStreamNamePrefix="ApplicationLogs") 
+    
+    if 'uploadSequenceToken' in log_stream_resp['logStreams'][0]:
+        # Get previous Sequence Token if it exists and add it to parameter
+        sequence_token = log_stream_resp['logStreams'][0]['uploadSequenceToken']
         log_event['sequenceToken'] = sequence_token
 
     try:
         client.put_log_events(**log_event)
-    except:
-        print("")
+    except Exception as e:
+        sequence_token = e.response['expectedSequenceToken']
+        log_event['sequenceToken'] = sequence_token
+        client.put_log_events(**log_event)
