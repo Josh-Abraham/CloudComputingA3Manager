@@ -6,6 +6,7 @@ MODEL_METRICS = get_metrics()
 IMAGE = None
 PREDICTION = None
 LABEL = None
+TRAIN_INSTANCE = 'i-061843a216e13035b'
 
 @manager_routes.route('/label_image', methods = ['GET','POST'])
 def label_image():
@@ -69,6 +70,7 @@ def show_category():
 
 @manager_routes.route('/settings', methods = ['GET', 'POST'])
 def settings():
+    global TRAIN_INSTANCE
     if request.method == 'GET':
         train_metrics, label_metrics = configure_metrics()
         return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
@@ -79,7 +81,9 @@ def settings():
         purge_images()
         train_metrics, label_metrics = configure_metrics()
         return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
+    
     print('train_model')
+    startup(TRAIN_INSTANCE)
     train_metrics, label_metrics = configure_metrics()
     return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
 
