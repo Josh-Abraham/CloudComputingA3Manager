@@ -13,9 +13,6 @@
                 >
                 <div class="modal" style="width:70vw; height: 80vh">
                     <h1 class="form-title">Show Image By Category</h1>
-                    {% if showAll is defined %}
-                        <h3 style="font-style: italic;">Showing all Images</h3>
-                    {% endif %}
                     <div class="div-row" style="justify-content: space-around;">
                         <div class="dropdown">
                             <button class="dropbtn" style="margin-left: 20px; width:170px">By Predicted Label</button>
@@ -39,8 +36,8 @@
                                     <div class="div-row">
                                     {% for image_data in image_row %}
                                         <div style="display: flex; flex-direction: column; align-items: center;">
-                                            <img src= "data:image/png;base64,{{ image_data['image'] }}" alt="IMAGE NOT FOUND" class="show-image" style="width: 25vw"/>
-                                            Labelled Value: {{ image_data['label'] }}
+                                            <img src= "data:image/png;base64,{{ image_data['image'] }}" alt="IMAGE NOT FOUND" class="show-image" style="width: 25vw; max-height: 240px; min-height: 240px;"/>
+                                            Labelled Value: {{ image_data['label'] }}<br/>
                                             Predicted Value: {{ image_data['predicted_label'] }}
                                         </div>
                                     {% endfor %}

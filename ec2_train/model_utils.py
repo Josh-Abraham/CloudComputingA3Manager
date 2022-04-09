@@ -2,10 +2,10 @@ import tensorflow as tf
 import tensorflow_datasets as tfds
 from PIL import Image
 from numpy import asarray
-from aws_utils import download_image, save_s3_model, load_s3_metrics
+from aws_utils import download_image, save_s3_model, read_metrics, write_same_metrics
 import base64
 
-split = ['train[:97%]', 'train[97%:]']
+split = ['train[:90%]', 'train[90%:]']
 trainDataset, testDataset = tfds.load(name='cats_vs_dogs', split=split, as_supervised=True)
 HEIGHT = 200
 WIDTH = 200
@@ -76,8 +76,11 @@ def retrain(model, images, labels):
 
     # Run evaluation.
     (loss, accuracy) = model.evaluate(testDataset)
-    accuracy_old = load_s3_metrics()['accuracy']
+    accuracy_old = read_metrics()['accuracy']
+    accuracy_old = 0
     if accuracy >= accuracy_old:
         save_s3_model(model, loss, accuracy)
         return "OK"
+    else:
+        write_same_metrics(loss, accuracy)
     return "Not Updated"
