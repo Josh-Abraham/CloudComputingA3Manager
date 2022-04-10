@@ -11,7 +11,7 @@
         {% if image_list is defined %}
 	        <table>
             <caption><h1>List of Images Stored</h1></caption>
-            <tr><th>Index</th><th>Image Id</th><th>Predicted Label</th><th>Actual Label</th></tr>
+            <tr><th>Image Id</th><th>Index</th><th>Predicted Label</th><th>Actual Label</th></tr>
 	        {% for image in image_list %}
                 <tr>
                     <td style="font-weight:600">{{ image['key'] }}</td>
