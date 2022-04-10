@@ -1,6 +1,6 @@
-from cmath import exp
 from access_key import aws_config
-import boto3
+from botocore.exceptions import ClientError
+import boto3, json, time
 from botocore.config import Config
 
 S3_BUCKET = "image-bucket-a3"
@@ -15,6 +15,8 @@ my_config = Config(
 
 s3=boto3.client('s3', config=my_config, aws_access_key_id= aws_config['aws_access_key_id'], aws_secret_access_key= aws_config['aws_secret_access_key'])
 dynamodb = boto3.resource('dynamodb', config=my_config, aws_access_key_id= aws_config['aws_access_key_id'], aws_secret_access_key= aws_config['aws_secret_access_key'])
+ec2 = boto3.client('ec2',config=my_config,aws_access_key_id= aws_config['aws_access_key_id'], aws_secret_access_key= aws_config['aws_secret_access_key'])
+
 image_store = dynamodb.Table('image_store')
 
 def download_image(key):
@@ -38,15 +40,14 @@ def read_dynamo(key):
     except:
         return None
 
-def update_dynamo(key, label, classification="None"):
+def update_dynamo(key, label):
     response = image_store.update_item(
         Key={
             'image_key': key,
         },
-        UpdateExpression="set label=:l, predicted_label=:p, trained=:t",
+        UpdateExpression="set label=:l, trained=:t",
         ExpressionAttributeValues = {
             ':l': label,
-            ':p': classification,
             ':t': False
         },
         ReturnValues="UPDATED_NEW"
@@ -94,7 +95,7 @@ def read_category(category, isPredicted):
                         {
                             'image': download_image(item['image_key']),
                             'label': item['label'],
-                            'label': item['label']
+                            'predicted_label': item['predicted_label']
                         })
                     j += 1
                     if j % 3 == 0:
@@ -129,7 +130,7 @@ def read_all():
                 {
                     'image': download_image(item['image_key']),
                     'label': item['label'],
-                    'label': item['label']
+                    'predicted_label': item['predicted_label']
                 })
             j += 1
             if j % 3 == 0:
@@ -137,6 +138,25 @@ def read_all():
                 i += 1
                 j = 0
         return images
+    except:
+        return None
+
+
+def read_all_keys():
+    try:
+        response = image_store.scan()
+        list = []
+        index = 1
+        for item in response['Items']:
+            list.append(
+                {
+                    'index': index,
+                    'key': item['image_key'],
+                    'label': item['label'],
+                    'predicted_label': item['predicted_label']
+                })
+            index += 1
+        return list
     except:
         return None
 
@@ -165,3 +185,29 @@ def clear_table():
     }
 
 
+def startup(instance_id):
+    print('Starting instance ' + instance_id)
+    try:
+        ec2.start_instances(InstanceIds=[instance_id], DryRun=True)
+    except ClientError as e:
+        if 'DryRunOperation' not in str(e):
+            raise
+
+    # Dry run succeeded, run start_instances without dryrun
+    try:
+        response = ec2.start_instances(InstanceIds=[instance_id], DryRun=False)
+        print(response)
+    except ClientError as e:
+        print(e)
+
+def read_model_metrics():
+    data = s3.get_object(Bucket='ece1779model', Key='vgg_stats.json')["Body"].read().decode('utf-8')
+    data = json.loads(data)
+    return data
+
+def check_training(instance_id):
+    response = ec2.describe_instance_status(InstanceIds=[instance_id])
+    if not len(response['InstanceStatuses']) == 0:
+        if response['InstanceStatuses'][0]['InstanceState']['Name'] == 'running' or response['InstanceStatuses'][0]['InstanceState']['Name'] == 'pending':
+            return True
+    return False
