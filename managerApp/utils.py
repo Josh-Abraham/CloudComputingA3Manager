@@ -41,7 +41,6 @@ def read_dynamo(key):
     except:
         return None
 
-<<<<<<< HEAD
 def read_dynamo_manager_mode(key):
     try:
         if not key == "":
@@ -54,9 +53,6 @@ def read_dynamo_manager_mode(key):
         return None
 
 def update_dynamo(key, label, classification="None"):
-=======
-def update_dynamo(key, label):
->>>>>>> main
     response = image_store.update_item(
         Key={
             'image_key': key,
