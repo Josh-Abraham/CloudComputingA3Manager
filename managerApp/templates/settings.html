@@ -22,7 +22,14 @@
                                 <label style="font-style: italic;">Clear all user supplied data in S3 & DynamoDB</label>
                                 <input type=submit value="Clear" name="clear_data" class="submit-button">
                             </div>
-                            <div class="dashboard-modal" style="margin-top: 30px;">
+                            <div class="dashboard-modal">
+                                <h2>Training Mode</h2>
+                                <label style="font-style: italic;">Select traning mode between manual and autotrain</label>
+                                <input type="submit" id="manual" value="manual" name="submit_mode">
+                                <input type="submit" id="autotrain" value="autotrain" name="submit_mode">
+                                </div>
+                            </div>
+                            <div class="dashboard-modal">
                                 <h2>Train Model</h2>
                                 <label style="font-style: italic;">Train model with new labelled images</label><br/>
                                 <input type=submit value="Train" name="train_model" class="submit-button">

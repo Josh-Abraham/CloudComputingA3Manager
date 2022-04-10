@@ -84,6 +84,13 @@ def settings():
         train_metrics, label_metrics = configure_metrics()
         return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
     
+    
+    
+    mode = request.form.get("submit_mode")
+    
+    #update the manager mode
+    update_dynamo_manager_mode('manager_app', mode)
+
     is_clear = request.form.get("clear_data")
     if not is_clear == None:
         clear_table()
@@ -111,4 +118,3 @@ def configure_metrics():
         {'name': 'Not Matching', 'value': MODEL_METRICS['trained'] - MODEL_METRICS['matching']},
     ]
     return train_metrics, label_metrics
-    
