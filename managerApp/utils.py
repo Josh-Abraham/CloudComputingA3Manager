@@ -52,7 +52,7 @@ def read_dynamo_manager_mode(key):
     except:
         return None
 
-def update_dynamo(key, label, classification="None"):
+def update_dynamo(key, label):
     response = image_store.update_item(
         Key={
             'image_key': key,

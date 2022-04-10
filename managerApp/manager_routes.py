@@ -17,8 +17,8 @@ def label_image():
     Given a search exists give classification option
     Write to dynamo, include new 'trained' tag
     """
-    global IMAGE, PREDICTION, MODEL_METRICS, LABEL
     message = "[managerApp] [/label_image] "
+    global IMAGE, PREDICTION, DATA_METRICS, LABEL
     if request.method == 'POST':
         message += "[POST]  "
         category = request.form.get("submit")
@@ -83,11 +83,15 @@ def show_category():
 @manager_routes.route('/settings', methods = ['GET', 'POST'])
 def settings():
     message = "[managerApp] [/settings] "
+    global TRAIN_INSTANCE, MODEL_TRAINING
+    model_metrics = read_model_metrics()
+    accuracy = model_metrics['accuracy']
+    loss = model_metrics['loss']
+    MODEL_TRAINING = check_training(TRAIN_INSTANCE)
+
     if request.method == 'GET':
         train_metrics, label_metrics = configure_metrics()
         return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING)
-    
-    
     
     mode = request.form.get("submit_mode")
     
@@ -102,7 +106,8 @@ def settings():
         # Logging
         message += "[clear data] train_metrics: " + train_metrics + " label_metrics: " + label_metrics
         create_log(message)
-        return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
+        return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING)
+    
     print('train_model')
     MODEL_TRAINING = True
     startup(TRAIN_INSTANCE)
