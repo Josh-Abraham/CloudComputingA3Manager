@@ -31,8 +31,13 @@
                             </div>
                             <div class="dashboard-modal">
                                 <h2>Train Model</h2>
-                                <label style="font-style: italic;">Train model with new labelled images</label><br/>
-                                <input type=submit value="Train" name="train_model" class="submit-button">
+                                {% if isTraining %}
+                                    <img src="https://statis-store-a3.s3.amazonaws.com/loading.gif" class="icon" style="width:105px">
+                                    <h3  style="font-style: italic;">Training Currently in Progress</h3>
+                                {% else %}
+                                    <label style="font-style: italic;">Train model with new labelled images</label><br/>
+                                    <input type=submit value="Train" name="train_model" class="submit-button">
+                                {% endif %}
                             </div>
                         </div>
                         <div class="dashboard-modal" style="width:350px; height: 375px">
@@ -40,6 +45,14 @@
                             <label style="font-style: italic;">Metrics about current images, labelling and model performance</label>
                             <div id="trainMetrics" style="width: 250px;height:300px;"></div>    
                         </div>
+                    </div>
+                    <div class="dashboard-modal" style="width:325px; margin-top: 15px">
+                        <h2>Model Statistics</h2>
+                        <label style="font-style: italic;">Model Type: VGG</label>
+                        <label style="font-style: italic;">Optimizer: Adam</label>
+                        <label style="font-style: italic;">Loss Function: Categorical Crossentropy</label>
+                        <label style="font-style: italic;">Accuracy: {{ accuracy }}</label>
+                        <label style="font-style: italic;">Loss: {{ loss }}</label>
                     </div>
                 </form>
             </div>

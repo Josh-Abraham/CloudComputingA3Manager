@@ -1,12 +1,15 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request
 from utils import *
 from statistics_server import create_log
 
 manager_routes = Blueprint("manager_routes", __name__)
-MODEL_METRICS = get_metrics()
+DATA_METRICS = get_metrics()
+
+MODEL_TRAINING = False
 IMAGE = None
 PREDICTION = None
 LABEL = None
+TRAIN_INSTANCE = 'i-061843a216e13035b'
 
 @manager_routes.route('/label_image', methods = ['GET','POST'])
 def label_image():
@@ -14,8 +17,12 @@ def label_image():
     Given a search exists give classification option
     Write to dynamo, include new 'trained' tag
     """
+<<<<<<< HEAD
     global IMAGE, PREDICTION, MODEL_METRICS, LABEL
     message = "[managerApp] [/label_image] "
+=======
+    global IMAGE, PREDICTION, DATA_METRICS, LABEL
+>>>>>>> main
     if request.method == 'POST':
         message += "[POST]  "
         category = request.form.get("submit")
@@ -38,7 +45,7 @@ def label_image():
             # On dropdown click
             key = request.form.get('key')
             resp = update_dynamo(key, category)
-            MODEL_METRICS = get_metrics()
+            DATA_METRICS = get_metrics()
             if resp == "OK":
                 LABEL=category
                 message += "image: " + IMAGE + " prediction: " + PREDICTION  + " label: " + LABEL + " key: " + KEY
@@ -79,10 +86,19 @@ def show_category():
 
 @manager_routes.route('/settings', methods = ['GET', 'POST'])
 def settings():
+<<<<<<< HEAD
     message = "[managerApp] [/settings] "
+=======
+    global TRAIN_INSTANCE, MODEL_TRAINING
+    model_metrics = read_model_metrics()
+    accuracy = model_metrics['accuracy']
+    loss = model_metrics['loss']
+    MODEL_TRAINING = check_training(TRAIN_INSTANCE)
+
+>>>>>>> main
     if request.method == 'GET':
         train_metrics, label_metrics = configure_metrics()
-        return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
+        return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING)
     
     
     
@@ -96,25 +112,48 @@ def settings():
         clear_table()
         purge_images()
         train_metrics, label_metrics = configure_metrics()
+<<<<<<< HEAD
         # Logging
         message += "[clear data] train_metrics: " + train_metrics + " label_metrics: " + label_metrics
         create_log(message)
         return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
+=======
+        return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING)
+    
+>>>>>>> main
     print('train_model')
+    MODEL_TRAINING = True
+    startup(TRAIN_INSTANCE)
+    
     train_metrics, label_metrics = configure_metrics()
-    return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics)
+    return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING)
+
+
+@manager_routes.route('/list_images')
+def list_images():
+    """ Get list of all keys currently in the database
+    """
+    image_list = read_all_keys()
+    total=len(image_list)
+
+    if not image_list == None:
+        return render_template('list_images.html', image_list=image_list, total=total)
+    else:
+        return render_template('list_images.html')
+
+### Helper Functions
 
 def configure_metrics():
-    global MODEL_METRICS
-    MODEL_METRICS = get_metrics()
+    global DATA_METRICS
+    DATA_METRICS = get_metrics()
     train_metrics = [
-        {'name': 'Untrained', 'value': MODEL_METRICS['untrained']},
-        {'name': 'Trained', 'value': MODEL_METRICS['trained']}
+        {'name': 'Untrained', 'value': DATA_METRICS['untrained']},
+        {'name': 'Trained', 'value': DATA_METRICS['trained']}
     ]
     label_metrics = [
-        {'name': 'Labelled', 'value': MODEL_METRICS['labelled']},
-        {'name': 'Unlabelled', 'value': MODEL_METRICS['untrained'] - MODEL_METRICS['labelled']},
-        {'name': 'Matching', 'value': MODEL_METRICS['matching']},
-        {'name': 'Not Matching', 'value': MODEL_METRICS['trained'] - MODEL_METRICS['matching']},
+        {'name': 'Labelled', 'value': DATA_METRICS['labelled']},
+        {'name': 'Unlabelled', 'value': DATA_METRICS['untrained'] - DATA_METRICS['labelled']},
+        {'name': 'Matching', 'value': DATA_METRICS['matching']},
+        {'name': 'Not Matching', 'value': DATA_METRICS['trained'] - DATA_METRICS['matching']},
     ]
     return train_metrics, label_metrics

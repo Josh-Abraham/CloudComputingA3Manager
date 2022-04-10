@@ -273,3 +273,35 @@ body {
   align-items: center;
 }
 
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 400px;
+  text-align: center;
+ 
+}
+
+tbody {
+  max-height: 450px;
+  width: 400px;
+  display: block;
+  overflow-y: auto;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: center;
+  width: 100px;
+}
+
+
+tr:nth-child(even) {
+  background-color: #dddddd8e;
+  max-height: 15px !important;
+}
+tr:nth-child(odd) {
+  background-color: #fcfcfcb7;
+  max-height: 15px !important;
+}
+
