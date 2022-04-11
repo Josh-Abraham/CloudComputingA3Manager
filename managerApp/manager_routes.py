@@ -72,8 +72,8 @@ def show_category():
 
 @manager_routes.route('/settings', methods = ['GET', 'POST'])
 def settings():
-    message = "[managerApp] [/settings] "
     global TRAIN_INSTANCE, MODEL_TRAINING
+    model_mode = get_train_mode()
     model_metrics = read_model_metrics()
     accuracy = model_metrics['accuracy']
     loss = model_metrics['loss']
@@ -81,7 +81,7 @@ def settings():
 
     if request.method == 'GET':
         train_metrics, label_metrics = configure_metrics()
-        return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING)
+        return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING, isAuto=model_mode)
 
     is_clear = request.form.get("clear_data")
     mode = request.form.get("submit_mode")
@@ -101,7 +101,7 @@ def settings():
         
     train_metrics, label_metrics = configure_metrics()
     
-    return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING)
+    return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING, isAuto=model_mode)
 
 
 @manager_routes.route('/list_images')

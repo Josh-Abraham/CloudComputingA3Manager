@@ -71,7 +71,8 @@ def update_dynamo(key, label):
 
 # update the manager mode
 def update_dynamo_manager_mode(key, mode):
-    value = False if mode == "manual" else True
+    
+    value = False if mode == "Manual" else True
     response = manager_mode.update_item(Key={'app_name': key},
         UpdateExpression="set automatic_mode=:m",ExpressionAttributeValues = {':m': value},
             ReturnValues="UPDATED_NEW")
@@ -235,3 +236,8 @@ def check_training(instance_id):
         if response['InstanceStatuses'][0]['InstanceState']['Name'] == 'running' or response['InstanceStatuses'][0]['InstanceState']['Name'] == 'pending':
             return True
     return False
+
+def get_train_mode():
+    response = manager_mode.get_item(Key={'app_name' : "manager_app"})
+    
+    return response.get('Item').get('automatic_mode')
