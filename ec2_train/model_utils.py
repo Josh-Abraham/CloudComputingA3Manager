@@ -5,7 +5,7 @@ from numpy import asarray
 from aws_utils import download_image, save_s3_model, read_metrics, write_same_metrics
 import base64
 
-split = ['train[:90%]', 'train[90%:]']
+split = ['train[:96%]', 'train[96%:]']
 trainDataset, testDataset = tfds.load(name='cats_vs_dogs', split=split, as_supervised=True)
 HEIGHT = 200
 WIDTH = 200

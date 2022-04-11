@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request
 from utils import *
-from statistics_server import create_log
 
 manager_routes = Blueprint("manager_routes", __name__)
 DATA_METRICS = get_metrics()
@@ -17,10 +16,8 @@ def label_image():
     Given a search exists give classification option
     Write to dynamo, include new 'trained' tag
     """
-    message = "[managerApp] [/label_image] "
     global IMAGE, PREDICTION, DATA_METRICS, LABEL
     if request.method == 'POST':
-        message += "[POST]  "
         category = request.form.get("submit")
         if category == None:
             key = request.form.get('key')
@@ -30,12 +27,9 @@ def label_image():
                 if not IMAGE == None:
                     PREDICTION = resp['predicted_label']
                     LABEL = resp['label']
-                    # Logging
-                    message += "image: " + IMAGE + " prediction: " + PREDICTION  + " label: " + LABEL + " key: " + KEY
-                    create_log(message)
+                    
                     return render_template("label_image.html", image=IMAGE, prediction=PREDICTION, label=LABEL, key=key)
-            # No Key -> Returns Not Found & Logging
-            create_log(message + "key: " + key + "Key Not Found")
+            
             return render_template("label_image.html", status="No Image With Provided Key", key=key)
         else:
             # On dropdown click
@@ -44,11 +38,7 @@ def label_image():
             DATA_METRICS = get_metrics()
             if resp == "OK":
                 LABEL=category
-                message += "image: " + IMAGE + " prediction: " + PREDICTION  + " label: " + LABEL + " key: " + KEY
-                create_log(message)
                 return render_template("label_image.html", image=IMAGE, prediction=PREDICTION, label=LABEL, key=key)
-            message += "error: writing new label key: " + key
-            create_log(message)
             return render_template("label_image.html", status="Error writing new label", key=key)
 
     return render_template("label_image.html")
@@ -92,27 +82,25 @@ def settings():
     if request.method == 'GET':
         train_metrics, label_metrics = configure_metrics()
         return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING)
-    
-    mode = request.form.get("submit_mode")
-    
-    #update the manager mode
-    update_dynamo_manager_mode('manager_app', mode)
 
     is_clear = request.form.get("clear_data")
+    mode = request.form.get("submit_mode")
+    
     if not is_clear == None:
         clear_table()
         purge_images()
-        train_metrics, label_metrics = configure_metrics()
-        # Logging
-        message += "[clear data] train_metrics: " + train_metrics + " label_metrics: " + label_metrics
-        create_log(message)
-        return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING)
-    
-    print('train_model')
-    MODEL_TRAINING = True
-    startup(TRAIN_INSTANCE)
-    
+        
+    elif not mode == None:
+        #update the manager mode
+        update_dynamo_manager_mode('manager_app', mode)
+        
+    else:
+        print('train_model')
+        MODEL_TRAINING = True
+        startup(TRAIN_INSTANCE)
+        
     train_metrics, label_metrics = configure_metrics()
+    
     return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING)
 
 

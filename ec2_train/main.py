@@ -1,8 +1,8 @@
 import tensorflow as tf
-from aws_utils import load_s3_model, read_all, update_dynamo, read_metrics, write_same_metrics, shutdown
+from aws_utils import *
 from model_utils import generate_image_tensor, retrain
 from numpy import asarray
-SELF_INSITANCE = 'i-061843a216e13035b' 
+SELF_INSTANCE = 'i-061843a216e13035b' 
 
 def retrain_call():
     print('RETRAIN')
@@ -35,4 +35,5 @@ def retrain_call():
         write_same_metrics(loss, accuracy, key)
         
 retrain_call()
-shutdown(SELF_INSITANCE)
+purge_images()
+shutdown(SELF_INSTANCE)
