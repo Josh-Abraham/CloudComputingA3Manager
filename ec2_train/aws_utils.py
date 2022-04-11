@@ -6,6 +6,7 @@ from access_key import aws_config
 import json
 
 S3_BUCKET = "image-bucket-a3"
+S3_TRAIN_BUCKET = ""
 KEY = 0
 
 my_config = Config(
@@ -120,3 +121,9 @@ def shutdown(instance_id):
         print(response)
     except ClientError as e:
         print(e)
+
+def purge_images():
+    s3_del = boto3.resource('s3',config=my_config,aws_access_key_id= aws_config['aws_access_key_id'], aws_secret_access_key= aws_config['aws_secret_access_key'])
+    bucket = s3_del.Bucket(S3_TRAIN_BUCKET)
+    bucket.objects.all().delete()
+    return True

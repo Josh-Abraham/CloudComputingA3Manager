@@ -39,13 +39,21 @@
                             <div id="trainMetrics" style="width: 250px;height:300px;"></div>    
                         </div>
                     </div>
-                    <div class="dashboard-modal" style="width:325px; margin-top: 15px">
-                        <h2>Model Statistics</h2>
-                        <label style="font-style: italic;">Model Type: VGG</label>
-                        <label style="font-style: italic;">Optimizer: Adam</label>
-                        <label style="font-style: italic;">Loss Function: Categorical Crossentropy</label>
-                        <label style="font-style: italic;">Accuracy: {{ accuracy }}</label>
-                        <label style="font-style: italic;">Loss: {{ loss }}</label>
+                    <div class="div-row" style="justify-content: space-between; padding-top: 20px;">
+                        <div class="dashboard-modal">
+                            <h2>Training Mode</h2>
+                            <label style="font-style: italic;">Select traning mode between manual and autotrain</label>
+                            <input type="submit" id="manual" value="manual" name="submit_mode" class="submit-button">
+                            <input type="submit" id="autotrain" value="autotrain" name="submit_mode" class="submit-button">
+                        </div>
+                        <div class="dashboard-modal" style="width:350px;">
+                            <h2>Model Statistics</h2>
+                            <label style="font-style: italic;">Model Type: VGG</label>
+                            <label style="font-style: italic;">Optimizer: Adam</label>
+                            <label style="font-style: italic;">Loss Function: Categorical Crossentropy</label>
+                            <label style="font-style: italic;">Accuracy: {{ accuracy }}</label>
+                            <label style="font-style: italic;">Loss: {{ loss }}</label>
+                        </div>
                     </div>
                 </form>
             </div>

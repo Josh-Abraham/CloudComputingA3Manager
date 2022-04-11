@@ -27,8 +27,9 @@ def label_image():
                 if not IMAGE == None:
                     PREDICTION = resp['predicted_label']
                     LABEL = resp['label']
+                    
                     return render_template("label_image.html", image=IMAGE, prediction=PREDICTION, label=LABEL, key=key)
-            # No Key -> Returns Not Found 
+            
             return render_template("label_image.html", status="No Image With Provided Key", key=key)
         else:
             # On dropdown click
@@ -39,7 +40,6 @@ def label_image():
                 LABEL=category
                 return render_template("label_image.html", image=IMAGE, prediction=PREDICTION, label=LABEL, key=key)
             return render_template("label_image.html", status="Error writing new label", key=key)
-
 
     return render_template("label_image.html")
 
@@ -72,6 +72,7 @@ def show_category():
 
 @manager_routes.route('/settings', methods = ['GET', 'POST'])
 def settings():
+    message = "[managerApp] [/settings] "
     global TRAIN_INSTANCE, MODEL_TRAINING
     model_metrics = read_model_metrics()
     accuracy = model_metrics['accuracy']
@@ -81,19 +82,25 @@ def settings():
     if request.method == 'GET':
         train_metrics, label_metrics = configure_metrics()
         return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING)
-    
+
     is_clear = request.form.get("clear_data")
+    mode = request.form.get("submit_mode")
+    
     if not is_clear == None:
         clear_table()
         purge_images()
-        train_metrics, label_metrics = configure_metrics()
-        return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING)
-    
-    print('train_model')
-    MODEL_TRAINING = True
-    startup(TRAIN_INSTANCE)
-    
+        
+    elif not mode == None:
+        #update the manager mode
+        update_dynamo_manager_mode('manager_app', mode)
+        
+    else:
+        print('train_model')
+        MODEL_TRAINING = True
+        startup(TRAIN_INSTANCE)
+        
     train_metrics, label_metrics = configure_metrics()
+    
     return render_template("settings.html", train_metrics=train_metrics, label_metrics=label_metrics, accuracy=accuracy, loss=loss, isTraining=MODEL_TRAINING)
 
 

@@ -18,6 +18,7 @@ dynamodb = boto3.resource('dynamodb', config=my_config, aws_access_key_id= aws_c
 ec2 = boto3.client('ec2',config=my_config,aws_access_key_id= aws_config['aws_access_key_id'], aws_secret_access_key= aws_config['aws_secret_access_key'])
 
 image_store = dynamodb.Table('image_store')
+manager_mode = dynamodb.Table('manager_mode')
 
 def download_image(key):
     try:
@@ -40,6 +41,17 @@ def read_dynamo(key):
     except:
         return None
 
+def read_dynamo_manager_mode(key):
+    try:
+        if not key == "":
+            response = manager_mode.get_item(Key={'app_name' : "manager_app"})
+            print("response in read is: ", response)
+            if 'Item' in response:
+                return response['Item']['automatic_mode']
+        return None
+    except:
+        return None
+
 def update_dynamo(key, label):
     response = image_store.update_item(
         Key={
@@ -53,6 +65,18 @@ def update_dynamo(key, label):
         ReturnValues="UPDATED_NEW"
     )
 
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        return "OK"
+    return "FAILURE"
+
+# update the manager mode
+def update_dynamo_manager_mode(key, mode):
+    value = False if mode == "manual" else True
+    response = manager_mode.update_item(Key={'app_name': key},
+        UpdateExpression="set automatic_mode=:m",ExpressionAttributeValues = {':m': value},
+            ReturnValues="UPDATED_NEW")
+    print("response is : ", response)
+    print("current value at dynamo_db is: ", read_dynamo_manager_mode('manager_app'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         return "OK"
     return "FAILURE"
