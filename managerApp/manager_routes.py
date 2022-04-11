@@ -72,6 +72,7 @@ def show_category():
 
 @manager_routes.route('/settings', methods = ['GET', 'POST'])
 def settings():
+    message = "[managerApp] [/settings] "
     global TRAIN_INSTANCE, MODEL_TRAINING
     model_mode = get_train_mode()
     model_metrics = read_model_metrics()
