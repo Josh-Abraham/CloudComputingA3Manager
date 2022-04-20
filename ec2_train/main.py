@@ -35,5 +35,4 @@ def retrain_call():
         write_same_metrics(loss, accuracy, key)
         
 retrain_call()
-purge_images()
 shutdown(SELF_INSTANCE)

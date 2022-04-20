@@ -77,7 +77,6 @@ def retrain(model, images, labels):
     # Run evaluation.
     (loss, accuracy) = model.evaluate(testDataset)
     accuracy_old = read_metrics()['accuracy']
-    accuracy_old = 0
     if accuracy >= accuracy_old:
         save_s3_model(model, loss, accuracy)
         return "OK"

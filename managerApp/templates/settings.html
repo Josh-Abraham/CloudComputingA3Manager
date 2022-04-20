@@ -20,7 +20,11 @@
                             <div class="dashboard-modal">
                                 <h2>Clear Data</h2>
                                 <label style="font-style: italic;">Clear all user supplied data in S3 & DynamoDB</label>
-                                <input type=submit value="Clear" name="clear_data" class="submit-button">
+                                {% if isTraining %}
+                                    <input type=submit value="Clear" name="clear_data" class="submit-button" disabled>
+                                {% else %}
+                                    <input type=submit value="Clear" name="clear_data" class="submit-button">
+                                {% endif %}
                             </div>
                             <div class="dashboard-modal" style="margin-top: 30px;">
                                 <h2>Train Model</h2>
@@ -42,9 +46,20 @@
                     <div class="div-row" style="justify-content: space-between; padding-top: 20px;">
                         <div class="dashboard-modal">
                             <h2>Training Mode</h2>
-                            <label style="font-style: italic;">Select traning mode between manual and autotrain</label>
-                            <input type="submit" id="manual" value="manual" name="submit_mode" class="submit-button">
-                            <input type="submit" id="autotrain" value="autotrain" name="submit_mode" class="submit-button">
+                            {% if isAuto %}
+                                <h3 style="font-style: italic;">Current Mode: Automatic</h3>
+                                <div class="div-row">
+                                    <input type="submit" id="manual" value="Manual" name="submit_mode" class="submit-button" style="margin-right:10px">
+                                    <input type="submit" id="autotrain" value="Automatic" name="submit_mode" class="submit-button" disabled>
+                                </div>
+                            {% else %}
+                                <h3 style="font-style: italic;">Current Mode: Manual</h3>
+                                <div class="div-row">
+                                    <input type="submit" id="manual" value="Manual" name="submit_mode" class="submit-button"  style="margin-right:10px" disabled>
+                                    <input type="submit" id="autotrain" value="Automatic" name="submit_mode" class="submit-button">
+                                </div>
+                            {% endif %}
+                            
                         </div>
                         <div class="dashboard-modal" style="width:350px;">
                             <h2>Model Statistics</h2>
